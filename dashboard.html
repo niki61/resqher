@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ResQHer – Dashboard</title>
+<link rel="icon" href="logo.png" type="image/png"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body class="dashboard-page">
+<div class="bg-orbs">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+</div>
+
+<!-- HEADER -->
+<header class="dash-header">
+  <div class="header-left">
+    <img src="logo.png" alt="ResQHer" class="header-logo" onerror="this.style.display='none'"/>
+    <span class="header-brand">Res<span class="q">Q</span><span class="her">Her</span></span>
+  </div>
+  <div class="header-right">
+    <div class="status-badge">
+      <span class="status-dot safe" id="status-dot"></span>
+      <span id="status-text">Safe</span>
+    </div>
+    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+  </div>
+</header>
+
+<!-- WELCOME BANNER -->
+<div class="welcome-banner">
+  <span>🛡️</span>
+  <p id="welcome-msg">Welcome back! You are protected.</p>
+</div>
+
+<main class="dash-main">
+
+  <!-- ACTION CARDS -->
+  <section class="action-section">
+    <div class="action-card live-card" id="live-card">
+      <div class="pulse-ring" id="live-pulse"></div>
+      <div class="card-icon">📡</div>
+      <h2>LIVE</h2>
+      <p>Start real-time location sharing — sends your GPS link to all contacts via WhatsApp</p>
+      <button class="btn-live" id="btn-live" onclick="toggleLiveMode()">
+        <span id="live-btn-text">Activate LIVE</span>
+      </button>
+    </div>
+    <div class="action-card risk-card" id="risk-card">
+      <div class="pulse-ring red" id="risk-pulse"></div>
+      <div class="card-icon">🚨</div>
+      <h2>RISK</h2>
+      <p>EMERGENCY — instantly sends your exact location to ALL contacts via WhatsApp now</p>
+      <button class="btn-risk" onclick="triggerRiskMode()">
+        🚨 Trigger RISK Alert
+      </button>
+    </div>
+  </section>
+
+  <!-- LOCATION PANEL -->
+  <section class="location-panel">
+    <div class="panel-header">
+      <h3>📍 Current Location</h3>
+      <span class="coord-badge" id="coord-badge">Acquiring GPS...</span>
+    </div>
+    <div class="location-display">
+      <div class="loc-row">
+        <span class="loc-label">Latitude</span>
+        <span class="loc-val" id="lat-val">—</span>
+      </div>
+      <div class="loc-row">
+        <span class="loc-label">Longitude</span>
+        <span class="loc-val" id="lng-val">—</span>
+      </div>
+      <div class="loc-row loc-row-full">
+        <span class="loc-label">Google Maps Link</span>
+        <span class="loc-val" id="maps-link-val">Waiting for GPS...</span>
+      </div>
+      <div class="loc-row">
+        <span class="loc-label">Accuracy</span>
+        <span class="loc-val" id="acc-val">—</span>
+      </div>
+      <div class="loc-row">
+        <span class="loc-label">Last Updated</span>
+        <span class="loc-val" id="update-time">—</span>
+      </div>
+    </div>
+    <div class="network-bar" id="network-bar">
+      <span id="network-status">🟢 Online</span>
+      <button class="btn-share-loc" onclick="openShareSheet('live')">💬 Share via WhatsApp</button>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section class="contacts-section">
+    <div class="section-header">
+      <h3>👥 Emergency Contacts</h3>
+      <button class="btn-add" onclick="openAddContact()">+ Add Contact</button>
+    </div>
+    <div class="contacts-list" id="contacts-list"></div>
+  </section>
+
+  <!-- ACTIVITY LOG -->
+  <section class="activity-section">
+    <h3>📋 Activity Log</h3>
+    <div class="activity-log" id="activity-log">
+      <div class="log-item">
+        <span class="log-time" id="login-time-log"></span>
+        <span class="log-msg">Session started. All systems normal.</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ADD CONTACT MODAL -->
+<div class="modal-overlay hidden" id="contact-modal">
+  <div class="modal-card">
+    <h3>Add Emergency Contact</h3>
+    <div class="modal-hint">
+      💡 Enter phone number with <strong>country code</strong> for WhatsApp.<br/>
+      India example: <strong>919876543210</strong> (91 + 10-digit number)
+    </div>
+    <div class="input-group">
+      <span class="input-icon">👤</span>
+      <input type="text" id="contact-name" placeholder="Contact name (e.g. Mom)"/>
+    </div>
+    <div class="input-group">
+      <span class="input-icon">📱</span>
+      <input type="tel" id="contact-phone" placeholder="Phone with country code: 919876543210"/>
+    </div>
+    <div class="input-group">
+      <span class="input-icon">✉</span>
+      <input type="email" id="contact-email" placeholder="Email (optional)"/>
+    </div>
+    <div class="input-group">
+      <span class="input-icon">🏷️</span>
+      <select id="contact-relation">
+        <option value="parent">Parent</option>
+        <option value="friend">Friend</option>
+        <option value="sibling">Sibling</option>
+        <option value="partner">Partner</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveContact()">Save Contact</button>
+      <button class="btn-cancel" onclick="closeContactModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- WHATSAPP SHARE SHEET -->
+<div class="wa-quick hidden" id="wa-sheet">
+  <div class="wa-sheet-inner">
+    <h3 id="wa-sheet-title">📍 Share Location via WhatsApp</h3>
+    <p id="wa-sheet-desc">Choose a contact to send your current GPS location to</p>
+    <div class="wa-contacts-grid" id="wa-contacts-grid"></div>
+    <button class="btn-send-all" onclick="sendToAllWhatsApp()">💬 Send to ALL Contacts</button>
+    <button class="btn-wa-close" onclick="closeWASheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- ALERT OVERLAY -->
+<div class="alert-overlay hidden" id="alert-overlay">
+  <div class="alert-card">
+    <span class="siren-icon">🚨</span>
+    <h2>EMERGENCY ALERT SENT</h2>
+    <p id="alert-status-text">Opening WhatsApp for each contact...</p>
+    <div class="alert-contacts-sent" id="alert-contacts-sent"></div>
+    <div class="alert-progress">
+      <div class="progress-bar" id="alert-progress-bar"></div>
+    </div>
+    <button class="btn-cancel-alert" onclick="cancelRisk()">Cancel Alert</button>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   CHANGE THIS LINE — replace YOUR_USERNAME with your PythonAnywhere
+   username. Example: const API = 'https://priya.pythonanywhere.com';
+================================================================ */
+const API = 'https://YOUR_USERNAME.pythonanywhere.com';
+
+'use strict';
+const $ = id => document.getElementById(id);
+let currentUser = null;
+let liveMode = false;
+let riskMode = false;
+let watchId = null;
+let currentLat = null;
+let currentLng = null;
+let locationBuffer = [];
+let contacts = [];
+let alertProgressInterval = null;
+let waMode = 'live';
+
+// ── UTILS ─────────────────────────────────────────
+function saveLocal(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+function loadLocal(k,fb=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch{return fb}}
+function timeNow(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function addLog(msg){
+  const log=$('activity-log');
+  if(!log)return;
+  const d=document.createElement('div');
+  d.className='log-item';
+  d.innerHTML=`<span class="log-time">${timeNow()}</span><span class="log-msg">${escHtml(msg)}</span>`;
+  log.prepend(d);
+  while(log.children.length>60)log.removeChild(log.lastChild);
+}
+
+// ── WHATSAPP ──────────────────────────────────────
+function buildWAMessage(isEmergency=false){
+  const time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  if(!currentLat||!currentLng){
+    return isEmergency
+      ? `🚨 EMERGENCY ALERT from ${currentUser.name}!\nI need help immediately!\nGPS loading — please call me NOW!`
+      : `📍 Live location from ${currentUser.name} (ResQHer)\nGPS acquiring... Stay alert.`;
+  }
+  const link=`https://www.google.com/maps?q=${currentLat},${currentLng}`;
+  if(isEmergency){
+    return `🚨 EMERGENCY ALERT!\n\n${currentUser.name} needs IMMEDIATE help!\n\n📍 Location: ${link}\n\n🕐 Time: ${time}\n\nPlease call them NOW or send help!`;
+  }
+  return `📡 Live Location Update\n\nHi! ${currentUser.name} is sharing their live location via ResQHer.\n\n📍 Current location: ${link}\n\n🕐 Updated: ${time}\n\nStay safe! 💜`;
+}
+
+function openWA(phone,message){
+  const clean=String(phone).replace(/[\s\-\+\(\)]/g,'');
+  window.open(`https://wa.me/${clean}?text=${encodeURIComponent(message)}`,'_blank');
+  addLog(`WhatsApp opened for ${clean}`);
+}
+
+function openShareSheet(mode){
+  if(contacts.length===0){alert('Please add at least one emergency contact first!');openAddContact();return;}
+  waMode=mode;
+  $('wa-sheet-title').textContent=mode==='risk'?'🚨 Send EMERGENCY Alert via WhatsApp':'📍 Share Location via WhatsApp';
+  $('wa-sheet-desc').textContent=mode==='risk'?'EMERGENCY! Send your location to contacts NOW':'Choose a contact or send to all';
+  const grid=$('wa-contacts-grid');
+  grid.innerHTML=contacts.map((c,i)=>`
+    <a class="wa-contact-btn" onclick="sendToOneWA(${i});return false;" href="javascript:void(0)">
+      <div class="wa-avatar">${c.name.charAt(0).toUpperCase()}</div>
+      <div class="wa-info">
+        <div class="wa-name">${escHtml(c.name)}</div>
+        <div class="wa-phone">${escHtml(c.phone)} · ${escHtml(c.relation||'contact')}</div>
+      </div>
+      <span class="wa-go">💬</span>
+    </a>`).join('');
+  $('wa-sheet').classList.remove('hidden');
+}
+
+function closeWASheet(){$('wa-sheet').classList.add('hidden')}
+
+function sendToOneWA(idx){
+  openWA(contacts[idx].phone,buildWAMessage(waMode==='risk'));
+  closeWASheet();
+  addLog(`Location sent to ${contacts[idx].name} via WhatsApp`);
+}
+
+function sendToAllWhatsApp(){
+  if(!contacts.length){alert('No contacts added!');return;}
+  const msg=buildWAMessage(waMode==='risk');
+  closeWASheet();
+  contacts.forEach((c,i)=>{
+    setTimeout(()=>{
+      openWA(c.phone,msg);
+      addLog(`✅ Alert sent to ${c.name}`);
+    },i*1400);
+  });
+  addLog(`📤 Sending to all ${contacts.length} contacts via WhatsApp`);
+}
+
+// ── GPS ────────────────────────────────────────────
+function startPassiveGPS(){
+  if(!navigator.geolocation){addLog('GPS not supported on this device.');return;}
+  navigator.geolocation.getCurrentPosition(updateLocation,handleGPSError,{enableHighAccuracy:true,timeout:15000});
+}
+
+function startContinuousGPS(){
+  if(!navigator.geolocation||watchId)return;
+  watchId=navigator.geolocation.watchPosition(updateLocation,handleGPSError,{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+  addLog('Continuous GPS tracking started.');
+}
+
+function stopContinuousGPS(){
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;addLog('GPS tracking stopped.');}
+}
+
+function handleGPSError(err){
+  if($('coord-badge'))$('coord-badge').textContent='GPS Error';
+  addLog(`GPS error: ${err.message}`);
+}
+
+function updateLocation(pos){
+  const{latitude:lat,longitude:lng,accuracy}=pos.coords;
+  currentLat=lat;currentLng=lng;
+  const mapsUrl=`https://www.google.com/maps?q=${lat},${lng}`;
+  const ts=new Date().toISOString();
+
+  if($('lat-val'))$('lat-val').textContent=lat.toFixed(6);
+  if($('lng-val'))$('lng-val').textContent=lng.toFixed(6);
+  if($('acc-val'))$('acc-val').textContent=`±${Math.round(accuracy)}m`;
+  if($('update-time'))$('update-time').textContent=timeNow();
+  if($('coord-badge')){$('coord-badge').textContent=`±${Math.round(accuracy)}m accuracy`;$('coord-badge').classList.add('live');}
+  if($('maps-link-val')){
+    $('maps-link-val').innerHTML=`<a href="${mapsUrl}" target="_blank" style="color:var(--green);font-size:0.82rem;word-break:break-all;">${mapsUrl}</a>`;
+  }
+
+  const data={lat,lng,accuracy,timestamp:ts,user:currentUser?.email,mapLink:mapsUrl};
+  if(!navigator.onLine){locationBuffer.push(data);saveLocal('resqher_loc_buffer',locationBuffer);return;}
+  if(locationBuffer.length>0)flushBuffer();
+  if(liveMode||riskMode)sendToBackend(data);
+}
+
+function sendToBackend(data){
+  fetch(`${API}/api/location`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{locationBuffer.push(data);saveLocal('resqher_loc_buffer',locationBuffer);});
+}
+
+function flushBuffer(){
+  const buf=[...locationBuffer];locationBuffer=[];saveLocal('resqher_loc_buffer',[]);
+  buf.forEach(d=>sendToBackend(d));
+  if(buf.length)addLog(`Flushed ${buf.length} buffered location(s).`);
+}
+
+// ── LIVE MODE ──────────────────────────────────────
+function toggleLiveMode(){liveMode?stopLiveMode():activateLiveMode();}
+
+function activateLiveMode(){
+  if(!contacts.length){alert('Add at least one emergency contact first!');openAddContact();return;}
+  liveMode=true;
+  setStatus('live','LIVE');
+  $('btn-live').classList.add('active');
+  $('live-btn-text').textContent='🔴 Stop LIVE';
+  $('live-pulse').classList.add('active');
+  $('live-card').style.borderColor='rgba(45,212,191,0.6)';
+  startContinuousGPS();
+  addLog('🟢 LIVE mode activated.');
+  openShareSheet('live');
+}
+
+function stopLiveMode(){
+  if(!liveMode)return;
+  liveMode=false;
+  setStatus('safe','Safe');
+  $('btn-live').classList.remove('active');
+  $('live-btn-text').textContent='Activate LIVE';
+  $('live-pulse').classList.remove('active');
+  $('live-card').style.borderColor='rgba(45,212,191,0.22)';
+  if(!riskMode)stopContinuousGPS();
+  addLog('LIVE mode deactivated.');
+}
+
+// ── RISK MODE ──────────────────────────────────────
+function triggerRiskMode(){
+  if(!contacts.length){alert('Please add emergency contacts first!');openAddContact();return;}
+  riskMode=true;
+  setStatus('risk','🚨 RISK');
+  $('risk-pulse').classList.add('active');
+  $('risk-card').style.borderColor='rgba(255,79,139,0.6)';
+  startContinuousGPS();
+  showAlertOverlay();
+  addLog('🚨 RISK mode triggered! Emergency alerts sending...');
+  sendEmergencyAlert();
+}
+
+function cancelRisk(){
+  riskMode=false;
+  hideAlertOverlay();
+  setStatus(liveMode?'live':'safe',liveMode?'LIVE':'Safe');
+  $('risk-pulse').classList.remove('active');
+  $('risk-card').style.borderColor='rgba(255,79,139,0.22)';
+  if(!liveMode)stopContinuousGPS();
+  addLog('RISK mode cancelled.');
+}
+
+function showAlertOverlay(){
+  $('alert-overlay').classList.remove('hidden');
+  const sent=$('alert-contacts-sent');
+  const msg=buildWAMessage(true);
+  sent.innerHTML=contacts.map(c=>{
+    const clean=String(c.phone).replace(/[\s\-\+\(\)]/g,'');
+    return `<div class="alert-contact-row">
+      <span class="ac-name">👤 ${escHtml(c.name)} · ${escHtml(c.phone)}</span>
+      <a href="https://wa.me/${clean}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn">Send 💬</a>
+    </div>`;
+  }).join('');
+  let progress=0;
+  const bar=$('alert-progress-bar');
+  const steps=['Sending alert to all contacts...','Sharing live GPS location...','Emergency contacts notified.','Stay safe. Help is coming.'];
+  let step=0;
+  alertProgressInterval=setInterval(()=>{
+    progress+=2;
+    if(bar)bar.style.width=`${Math.min(progress,100)}%`;
+    if(progress%25===0&&step<steps.length)if($('alert-status-text'))$('alert-status-text').textContent=steps[step++];
+    if(progress>=100)clearInterval(alertProgressInterval);
+  },80);
+}
+
+function hideAlertOverlay(){
+  $('alert-overlay').classList.add('hidden');
+  if(alertProgressInterval)clearInterval(alertProgressInterval);
+  if($('alert-progress-bar'))$('alert-progress-bar').style.width='0%';
+}
+
+function sendEmergencyAlert(){
+  const msg=buildWAMessage(true);
+  contacts.forEach((c,i)=>{
+    setTimeout(()=>{
+      const clean=String(c.phone).replace(/[\s\-\+\(\)]/g,'');
+      window.open(`https://wa.me/${clean}?text=${encodeURIComponent(msg)}`,'_blank');
+      addLog(`🚨 Alert sent to ${c.name} (${c.phone})`);
+    },i*1500);
+  });
+  fetch(`${API}/api/alert`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    user:currentUser?.email,name:currentUser?.name,
+    lat:currentLat,lng:currentLng,
+    mapLink:currentLat?`https://www.google.com/maps?q=${currentLat},${currentLng}`:'N/A',
+    contacts,timestamp:new Date().toISOString()
+  })}).catch(()=>{});
+}
+
+// ── STATUS ────────────────────────────────────────
+function setStatus(type,text){
+  const dot=$('status-dot');const stxt=$('status-text');
+  if(dot)dot.className='status-dot '+type;
+  if(stxt)stxt.textContent=text;
+}
+
+// ── CONTACTS ──────────────────────────────────────
+function renderContacts(){
+  const list=$('contacts-list');
+  if(!list)return;
+  if(!contacts.length){
+    list.innerHTML=`<div class="no-contacts">No emergency contacts yet.<br/>Add your mom, friend, or partner — they'll receive WhatsApp alerts with your GPS location.</div>`;
+    return;
+  }
+  list.innerHTML=contacts.map((c,i)=>{
+    const clean=String(c.phone).replace(/[\s\-\+\(\)]/g,'');
+    const msg=buildWAMessage(false);
+    return `<div class="contact-item">
+      <div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div>
+      <div class="contact-info">
+        <div class="contact-name">${escHtml(c.name)}</div>
+        <div class="contact-detail">${escHtml(c.phone)} · ${escHtml(c.relation||'contact')}</div>
+      </div>
+      <div class="contact-actions">
+        <span class="contact-tag">${escHtml(c.relation||'contact')}</span>
+        <a href="https://wa.me/${clean}?text=${encodeURIComponent(msg)}" target="_blank" class="btn-whatsapp">💬 WA</a>
+        <button class="btn-remove-contact" onclick="removeContact(${i})" title="Remove">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAddContact(){
+  $('contact-modal').classList.remove('hidden');
+  ['contact-name','contact-phone','contact-email'].forEach(id=>{if($(id))$(id).value='';});
+  if($('contact-relation'))$('contact-relation').value='parent';
+}
+function closeContactModal(){$('contact-modal').classList.add('hidden')}
+
+function saveContact(){
+  const name=$('contact-name').value.trim();
+  const phone=$('contact-phone').value.trim().replace(/[\s\-\+\(\)]/g,'');
+  const email=$('contact-email').value.trim();
+  const relation=$('contact-relation').value;
+  if(!name||!phone){alert('Name and phone are required.\nInclude country code, e.g. 919876543210 for India');return;}
+  if(phone.length<10){alert('Phone number too short. Include country code: 91XXXXXXXXXX');return;}
+  contacts.push({name,phone,email,relation});
+  saveLocal('resqher_contacts',contacts);
+  renderContacts();
+  closeContactModal();
+  addLog(`Contact added: ${name} (${phone})`);
+  fetch(`${API}/api/contacts`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:currentUser?.email,contacts})}).catch(()=>{});
+}
+
+function removeContact(idx){
+  const r=contacts.splice(idx,1);
+  saveLocal('resqher_contacts',contacts);
+  renderContacts();
+  addLog(`Contact removed: ${r[0]?.name}`);
+}
+
+// ── NETWORK ───────────────────────────────────────
+function updateNetworkStatus(){
+  const bar=$('network-bar');const status=$('network-status');
+  if(!bar||!status)return;
+  if(navigator.onLine){bar.classList.remove('offline');status.textContent='🟢 Online';flushBuffer();}
+  else{bar.classList.add('offline');status.textContent='🔴 Offline — Location buffered';}
+}
+
+// ── LOGOUT ────────────────────────────────────────
+function handleLogout(){
+  stopLiveMode();
+  localStorage.removeItem('resqher_user');
+  window.location.href='index.html';
+}
+
+// ── INIT ──────────────────────────────────────────
+function initDashboard(){
+  currentUser=loadLocal('resqher_user');
+  if(!currentUser){window.location.href='index.html';return;}
+  const wMsg=$('welcome-msg');
+  if(wMsg)wMsg.textContent=`Welcome back, ${currentUser.name}! You are protected. 🛡️`;
+  if($('login-time-log'))$('login-time-log').textContent=timeNow();
+  locationBuffer=loadLocal('resqher_loc_buffer',[]);
+  contacts=loadLocal('resqher_contacts',[]);
+  renderContacts();
+  startPassiveGPS();
+  updateNetworkStatus();
+  window.addEventListener('online',updateNetworkStatus);
+  window.addEventListener('offline',updateNetworkStatus);
+  if('Notification' in window&&Notification.permission==='default')Notification.requestPermission();
+  addLog(`Session started for ${currentUser.name}`);
+}
+
+document.addEventListener('DOMContentLoaded',initDashboard);
+</script>
+</body>
+</html>
