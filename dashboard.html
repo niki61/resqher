@@ -13,7 +13,6 @@
   <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
 </div>
 
-<!-- HEADER -->
 <header class="dash-header">
   <div class="header-left">
     <img src="logo.png" alt="ResQHer" class="header-logo" onerror="this.style.display='none'"/>
@@ -28,7 +27,6 @@
   </div>
 </header>
 
-<!-- WELCOME BANNER -->
 <div class="welcome-banner">
   <span>🛡️</span>
   <p id="welcome-msg">Welcome back! You are protected.</p>
@@ -36,7 +34,6 @@
 
 <main class="dash-main">
 
-  <!-- ACTION CARDS -->
   <section class="action-section">
     <div class="action-card live-card" id="live-card">
       <div class="pulse-ring" id="live-pulse"></div>
@@ -58,7 +55,6 @@
     </div>
   </section>
 
-  <!-- LOCATION PANEL -->
   <section class="location-panel">
     <div class="panel-header">
       <h3>📍 Current Location</h3>
@@ -92,7 +88,6 @@
     </div>
   </section>
 
-  <!-- CONTACTS -->
   <section class="contacts-section">
     <div class="section-header">
       <h3>👥 Emergency Contacts</h3>
@@ -101,7 +96,6 @@
     <div class="contacts-list" id="contacts-list"></div>
   </section>
 
-  <!-- ACTIVITY LOG -->
   <section class="activity-section">
     <h3>📋 Activity Log</h3>
     <div class="activity-log" id="activity-log">
@@ -114,7 +108,6 @@
 
 </main>
 
-<!-- ADD CONTACT MODAL -->
 <div class="modal-overlay hidden" id="contact-modal">
   <div class="modal-card">
     <h3>Add Emergency Contact</h3>
@@ -151,7 +144,6 @@
   </div>
 </div>
 
-<!-- WHATSAPP SHARE SHEET -->
 <div class="wa-quick hidden" id="wa-sheet">
   <div class="wa-sheet-inner">
     <h3 id="wa-sheet-title">📍 Share Location via WhatsApp</h3>
@@ -162,7 +154,6 @@
   </div>
 </div>
 
-<!-- ALERT OVERLAY -->
 <div class="alert-overlay hidden" id="alert-overlay">
   <div class="alert-card">
     <span class="siren-icon">🚨</span>
@@ -181,7 +172,7 @@
    CHANGE THIS LINE — replace YOUR_USERNAME with your PythonAnywhere
    username. Example: const API = 'https://priya.pythonanywhere.com';
 ================================================================ */
-const API = 'https://YOUR_USERNAME.pythonanywhere.com';
+const API = 'https://avhi.pythonanywhere.com';
 
 'use strict';
 const $ = id => document.getElementById(id);
@@ -200,7 +191,7 @@ let waMode = 'live';
 function saveLocal(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 function loadLocal(k,fb=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch{return fb}}
 function timeNow(){return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
-function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escHtml(s){return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"')}
 
 function addLog(msg){
   const log=$('activity-log');
