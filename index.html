@@ -7,6 +7,8 @@
 <link rel="icon" href="logo.png" type="image/png"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
 </head>
 <body class="auth-page">
 <div class="bg-orbs">
@@ -90,14 +92,22 @@
 </section>
 
 <script>
-/* ================================================================
-   CHANGE THIS LINE — replace YOUR_USERNAME with your PythonAnywhere
-   username. Example: if your username is "priya" put:
-   const API = 'https://priya.pythonanywhere.com';
-================================================================ */
-const API = 'https://avhi.pythonanywhere.com';
+// --- FIREBASE SETUP ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDTJxleruRMgPnFcWoQyEjH4tku-2gkn_8",
+  authDomain: "resqher-54c2b.firebaseapp.com",
+  projectId: "resqher-54c2b",
+  storageBucket: "resqher-54c2b.firebasestorage.app",
+  messagingSenderId: "530225571852",
+  appId: "1:530225571852:web:746b448ddf5b31220f6629"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
 
+const API = 'https://avhi.pythonanywhere.com';
 const $ = id => document.getElementById(id);
+
 function saveLocal(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 function loadLocal(k,fb=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch{return fb}}
 
@@ -159,10 +169,28 @@ async function handleSignup(){
   }
 }
 
+// --- REAL GOOGLE SIGN-IN ---
 function handleGoogleLogin(){
-  saveLocal('resqher_user',{email:'user@gmail.com',name:'Google User'});
-  showMsg('Redirecting...','success');
-  setTimeout(()=>{window.location.href='dashboard.html'},700);
+  showMsg('Opening Google Sign-In...', 'success');
+  auth.signInWithPopup(provider).then((result) => {
+    const user = result.user;
+    const email = user.email;
+    const name = user.displayName || email.split('@')[0];
+
+    saveLocal('resqher_user', {email, name});
+    showMsg('Google Login successful! Syncing...', 'success');
+
+    // Create or login account on backend invisibly using their secure Google UID
+    fetch(`${API}/api/signup`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({name, email, password: user.uid})
+    }).catch(()=>{});
+
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+  }).catch((error) => {
+    showMsg(error.message);
+  });
 }
 
 document.addEventListener('keydown',e=>{
