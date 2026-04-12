@@ -168,10 +168,6 @@
 </div>
 
 <script>
-/* ================================================================
-   CHANGE THIS LINE — replace YOUR_USERNAME with your PythonAnywhere
-   username. Example: const API = 'https://priya.pythonanywhere.com';
-================================================================ */
 const API = 'https://avhi.pythonanywhere.com';
 
 'use strict';
@@ -496,9 +492,24 @@ function initDashboard(){
   const wMsg=$('welcome-msg');
   if(wMsg)wMsg.textContent=`Welcome back, ${currentUser.name}! You are protected. 🛡️`;
   if($('login-time-log'))$('login-time-log').textContent=timeNow();
-  locationBuffer=loadLocal('resqher_loc_buffer',[]);
+  
+  // Load local contacts first for speed
   contacts=loadLocal('resqher_contacts',[]);
   renderContacts();
+
+  // Then fetch from backend to sync cross-device
+  fetch(`${API}/api/contacts?user=${encodeURIComponent(currentUser.email)}`)
+    .then(res => res.json())
+    .then(data => {
+      if(data.contacts && data.contacts.length > 0){
+        contacts = data.contacts;
+        saveLocal('resqher_contacts', contacts);
+        renderContacts();
+        addLog('Synced contacts from server.');
+      }
+    }).catch(() => console.log('Using local contacts.'));
+
+  locationBuffer=loadLocal('resqher_loc_buffer',[]);
   startPassiveGPS();
   updateNetworkStatus();
   window.addEventListener('online',updateNetworkStatus);
