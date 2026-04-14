@@ -2,44 +2,71 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0d1117"/>
+<meta name="description" content="ResQHer — Free women safety app. Real-time GPS tracking and emergency alerts via WhatsApp."/>
 <title>ResQHer – Women Safety Platform</title>
 <link rel="icon" href="logo.png" type="image/png"/>
+<link rel="apple-touch-icon" href="logo.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
-<script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
 </head>
 <body class="auth-page">
+
 <div class="bg-orbs">
-  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
 </div>
 
 <nav class="top-nav">
   <a href="#" class="nav-brand">Res<span class="q">Q</span><span class="her">Her</span></a>
-  <div class="nav-badge"><span class="dot"></span>Free App · India</div>
+  <div class="nav-badge"><span class="dot"></span>Free · Global · Safe</div>
 </nav>
 
 <section class="hero-section">
+
+  <!-- Hero Text -->
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span>Women Safety Platform</div>
+    <div class="hero-badge"><span class="dot"></span>Women Safety Platform — Available Worldwide</div>
     <h1>Your Shield.<br/><span class="gradient-text">Always With You.</span></h1>
-    <p class="hero-sub">Real-time GPS tracking, one-tap emergency alerts sent via WhatsApp to your trusted contacts — instantly.</p>
+    <p class="hero-sub">Real-time GPS tracking &amp; one-tap emergency alerts via WhatsApp — works in every country, on every device, for free.</p>
   </div>
 
+  <!-- Auth Card -->
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="logo-wrap">
-        <img src="logo.png" alt="ResQHer" class="logo-img" onerror="this.style.background='var(--grad)';this.style.padding='16px'"/>
+        <img src="logo.png" alt="ResQHer" class="logo-img" onerror="this.style.display='none'"/>
       </div>
       <h2 class="brand-title">Res<span class="q">Q</span><span class="her">Her</span></h2>
       <p class="tagline">Your safety, always connected.</p>
 
+      <!-- Quick Start — no account needed -->
+      <div class="quick-start-box" id="quick-start-box">
+        <div class="qs-label">⚡ Quick Start — No Account Needed</div>
+        <div class="input-group">
+          <span class="input-icon">👤</span>
+          <input type="text" id="qs-name" placeholder="Enter your name to start instantly"
+                 autocomplete="given-name" maxlength="40"/>
+        </div>
+        <button class="btn-quickstart" onclick="handleQuickStart()">
+          🛡️ Start Using ResQHer →
+        </button>
+      </div>
+
+      <div class="divider"><span>or create an account</span></div>
+
+      <!-- Tab switcher -->
       <div class="tab-switch">
         <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Login</button>
         <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
       </div>
 
+      <!-- Login -->
       <div id="form-login">
         <div class="input-group">
           <span class="input-icon">✉</span>
@@ -50,17 +77,13 @@
           <input type="password" id="login-password" placeholder="Password" autocomplete="current-password"/>
         </div>
         <button class="btn-primary" onclick="handleLogin()">Login Securely →</button>
-        <div class="divider"><span>or</span></div>
-        <button class="btn-google" onclick="handleGoogleLogin()">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="18"/>
-          Continue with Google
-        </button>
       </div>
 
+      <!-- Sign Up -->
       <div class="hidden" id="form-signup">
         <div class="input-group">
           <span class="input-icon">👤</span>
-          <input type="text" id="signup-name" placeholder="Full name"/>
+          <input type="text" id="signup-name" placeholder="Your full name" autocomplete="name"/>
         </div>
         <div class="input-group">
           <span class="input-icon">✉</span>
@@ -70,138 +93,137 @@
           <span class="input-icon">🔒</span>
           <input type="password" id="signup-password" placeholder="Create password (min 6 chars)" autocomplete="new-password"/>
         </div>
-        <button class="btn-primary" onclick="handleSignup()">Create Account →</button>
-        <div class="divider"><span>or</span></div>
-        <button class="btn-google" onclick="handleGoogleLogin()">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="18"/>
-          Sign up with Google
-        </button>
+        <button class="btn-primary" onclick="handleSignup()">Create Free Account →</button>
       </div>
 
       <div id="auth-message" class="auth-message"></div>
     </div>
   </div>
 
+  <!-- Features strip -->
   <div class="features-strip">
     <div class="feat-pill">📡 Live GPS Tracking</div>
     <div class="feat-pill">🚨 One-tap Emergency Alert</div>
-    <div class="feat-pill">💬 WhatsApp Location Share</div>
-    <div class="feat-pill">📴 Works Offline</div>
-    <div class="feat-pill">🆓 100% Free</div>
+    <div class="feat-pill">💬 WhatsApp + Google Maps</div>
+    <div class="feat-pill">🌍 Works Worldwide</div>
+    <div class="feat-pill">📴 Offline Support</div>
+    <div class="feat-pill">🆓 100% Free Forever</div>
   </div>
+
 </section>
 
 <script>
-// --- FIREBASE SETUP ---
-const firebaseConfig = {
-  apiKey: "AIzaSyDTJxleruRMgPnFcWoQyEjH4tku-2gkn_8",
-  authDomain: "resqher-54c2b.firebaseapp.com",
-  projectId: "resqher-54c2b",
-  storageBucket: "resqher-54c2b.firebasestorage.app",
-  messagingSenderId: "530225571852",
-  appId: "1:530225571852:web:746b448ddf5b31220f6629"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
-
+/* =============================================================
+   ResQHer – index.html script
+   No Firebase. No popups. Works for anyone, anywhere.
+============================================================= */
 const API = 'https://avhi.pythonanywhere.com';
 const $ = id => document.getElementById(id);
 
 function saveLocal(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 function loadLocal(k,fb=null){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb}catch{return fb}}
 
+function showMsg(text, type='error'){
+  const el = $('auth-message');
+  el.textContent = text;
+  el.className = 'auth-message ' + type;
+}
+
+function goToDashboard(){
+  window.location.href = 'dashboard.html';
+}
+
+/* ── QUICK START (No account needed) ─────────────────────── */
+function handleQuickStart(){
+  const name = $('qs-name').value.trim();
+  if(!name){ $('qs-name').focus(); $('qs-name').style.borderColor='var(--coral)'; return; }
+  $('qs-name').style.borderColor='';
+  const guestEmail = 'guest_' + Date.now() + '@resqher.app';
+  saveLocal('resqher_user', { email: guestEmail, name, isGuest: true });
+  showMsg('Welcome, ' + name + '! Starting ResQHer...', 'success');
+  setTimeout(goToDashboard, 600);
+}
+
+/* ── TAB SWITCH ─────────────────────────────────────────── */
 function switchTab(tab){
-  $('form-login').classList.toggle('hidden',tab!=='login');
-  $('form-signup').classList.toggle('hidden',tab!=='signup');
-  $('tab-login').classList.toggle('active',tab==='login');
-  $('tab-signup').classList.toggle('active',tab==='signup');
-  $('auth-message').textContent='';
+  $('form-login').classList.toggle('hidden', tab !== 'login');
+  $('form-signup').classList.toggle('hidden', tab !== 'signup');
+  $('tab-login').classList.toggle('active', tab === 'login');
+  $('tab-signup').classList.toggle('active', tab === 'signup');
+  $('auth-message').textContent = '';
 }
 
-function showMsg(text,type='error'){
-  const el=$('auth-message');
-  el.textContent=text;
-  el.className='auth-message '+type;
-}
-
+/* ── EMAIL LOGIN ────────────────────────────────────────── */
 async function handleLogin(){
-  const email=$('login-email').value.trim();
-  const pass=$('login-password').value;
-  if(!email||!pass){showMsg('Please fill in all fields.');return;}
-  showMsg('Logging in...','success');
-  try{
-    const res=await fetch(`${API}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
-    const data=await res.json();
+  const email = $('login-email').value.trim();
+  const pass  = $('login-password').value;
+  if(!email || !pass){ showMsg('Please fill in both fields.'); return; }
+  showMsg('Logging in...', 'success');
+  try {
+    const res  = await fetch(`${API}/api/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
     if(res.ok){
-      saveLocal('resqher_user',{email,name:data.name||email.split('@')[0]});
-      showMsg('Welcome back! Redirecting...','success');
-      setTimeout(()=>{window.location.href='dashboard.html'},700);
-    }else showMsg(data.error||'Invalid credentials.');
-  }catch{
-    if(pass.length>=4){
-      saveLocal('resqher_user',{email,name:email.split('@')[0]});
-      showMsg('Logged in (offline mode)! Redirecting...','success');
-      setTimeout(()=>{window.location.href='dashboard.html'},700);
-    }else showMsg('Cannot reach server. Check connection.');
+      saveLocal('resqher_user', { email, name: data.name || email.split('@')[0] });
+      showMsg('Welcome back! Redirecting...', 'success');
+      setTimeout(goToDashboard, 600);
+    } else {
+      showMsg(data.error || 'Incorrect email or password.');
+    }
+  } catch {
+    // Offline fallback
+    if(pass.length >= 4){
+      saveLocal('resqher_user', { email, name: email.split('@')[0] });
+      showMsg('Logged in (offline). Redirecting...', 'success');
+      setTimeout(goToDashboard, 600);
+    } else {
+      showMsg('Cannot reach server. Try Quick Start above.');
+    }
   }
 }
 
+/* ── EMAIL SIGNUP ───────────────────────────────────────── */
 async function handleSignup(){
-  const name=$('signup-name').value.trim();
-  const email=$('signup-email').value.trim();
-  const pass=$('signup-password').value;
-  if(!name||!email||!pass){showMsg('Please fill in all fields.');return;}
-  if(pass.length<6){showMsg('Password must be at least 6 characters.');return;}
-  showMsg('Creating account...','success');
-  try{
-    const res=await fetch(`${API}/api/signup`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pass})});
-    const data=await res.json();
+  const name  = $('signup-name').value.trim();
+  const email = $('signup-email').value.trim();
+  const pass  = $('signup-password').value;
+  if(!name || !email || !pass){ showMsg('Please fill in all fields.'); return; }
+  if(pass.length < 6){ showMsg('Password must be at least 6 characters.'); return; }
+  showMsg('Creating account...', 'success');
+  try {
+    const res  = await fetch(`${API}/api/signup`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, password: pass })
+    });
+    const data = await res.json();
     if(res.ok){
-      saveLocal('resqher_user',{email,name});
-      showMsg('Account created! Redirecting...','success');
-      setTimeout(()=>{window.location.href='dashboard.html'},700);
-    }else showMsg(data.error||'Signup failed.');
-  }catch{
-    saveLocal('resqher_user',{email,name});
-    showMsg('Account created (offline mode)! Redirecting...','success');
-    setTimeout(()=>{window.location.href='dashboard.html'},700);
+      saveLocal('resqher_user', { email, name });
+      showMsg('Account created! Redirecting...', 'success');
+      setTimeout(goToDashboard, 600);
+    } else {
+      showMsg(data.error || 'Signup failed. Try again.');
+    }
+  } catch {
+    saveLocal('resqher_user', { email, name });
+    showMsg('Account saved locally. Redirecting...', 'success');
+    setTimeout(goToDashboard, 600);
   }
 }
 
-// --- REAL GOOGLE SIGN-IN ---
-function handleGoogleLogin(){
-  showMsg('Opening Google Sign-In...', 'success');
-  auth.signInWithPopup(provider).then((result) => {
-    const user = result.user;
-    const email = user.email;
-    const name = user.displayName || email.split('@')[0];
-
-    saveLocal('resqher_user', {email, name});
-    showMsg('Google Login successful! Syncing...', 'success');
-
-    // Create or login account on backend invisibly using their secure Google UID
-    fetch(`${API}/api/signup`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name, email, password: user.uid})
-    }).catch(()=>{});
-
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
-  }).catch((error) => {
-    showMsg(error.message);
-  });
-}
-
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
+/* ── KEYBOARD SHORTCUT ──────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){
+    const qs = $('qs-name');
+    if(document.activeElement === qs){ handleQuickStart(); return; }
     if(!$('form-login').classList.contains('hidden')) handleLogin();
     else handleSignup();
   }
 });
 
-// Auto-redirect if already logged in
-if(localStorage.getItem('resqher_user')){window.location.href='dashboard.html';}
+/* ── AUTO-REDIRECT IF ALREADY LOGGED IN ─────────────────── */
+if(loadLocal('resqher_user')) goToDashboard();
 </script>
 </body>
 </html>
